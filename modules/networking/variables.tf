@@ -100,3 +100,21 @@ variable "subnet_names" {
   default     = ["GateWaySubnet", "Subnet2",  "Subnet3"]
   #default     = ["GateWaySubnet", "Subnet3"]
 }
+
+variable "appgw_subnet_name" {
+  type = string
+  description = "The name for the appgateway subnet"
+  default = "appgw-subnet"
+}
+
+variable "appgw_subnet_prefix" {
+  type = string
+  default = "10.0.10.0/24"
+  
+}
+
+variable "appgw" {
+  type = bool
+  default = true
+  
+}

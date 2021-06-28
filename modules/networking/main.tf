@@ -46,6 +46,17 @@ resource "azurerm_subnet" "lz-subnet" {
   provider             = azurerm.lz
 }
 
+resource "azurerm_subnet" "app-gw-lz-subnet" {
+  count = var.appgw ? 1 : 0
+  name                 = var.appgw_subnet_name
+  virtual_network_name = azurerm_virtual_network.lz-vnet.name
+  resource_group_name  = azurerm_resource_group.lz-network-rg.name
+  #address_prefix       = var.subnet_prefixes[count.index]
+  address_prefix = var.appgw_subnet_prefix
+  //count                = length(var.subnet_names)
+  provider             = azurerm.lz
+}
+
 /* This is not utilised currently
 
 locals {
@@ -86,6 +97,12 @@ resource "azurerm_route_table" "rt" {
   route {
     name                        = "routetoHub"
     address_prefix              = var.remote_vnet_address_prefix
+    next_hop_type               = "VirtualAppliance" #(the type of Azure hop the packet should be sent to. Possible values are VirtualNetworkGateway, VnetLocal, Internet, VirtualAppliance and None.)
+    next_hop_in_ip_address      = "10.172.250.4"
+  }
+  route {
+    name = "default-route"
+    address_prefix = "0.0.0.0/0"
     next_hop_type               = "VirtualAppliance" #(the type of Azure hop the packet should be sent to. Possible values are VirtualNetworkGateway, VnetLocal, Internet, VirtualAppliance and None.)
     next_hop_in_ip_address      = "10.172.250.4"
   }
