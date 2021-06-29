@@ -67,22 +67,25 @@ locals {
 } 
 */
 
-# Network security group creation
-# resource "azurerm_network_security_group" "lz-default-nsg" {
-#   count               = length(var.subnet_names)
-#   name                = "${var.prefix}-default-nsg"
-#   location            = azurerm_resource_group.lz-network-rg.location
-#   resource_group_name = azurerm_resource_group.lz-network-rg.name
-#   provider            = azurerm.lz
-# }
+#Network security group creation 
+resource "azurerm_network_security_group" "lz-default-nsg" {
+  count               = length(var.subnet_names)
+  //name                = "${var.prefix}-default-nsg"
+ // name                = "${var.subnet_names}.[count.index]-NSG"
+ //name                 = var.subnet_names[count.index]
+ name                 = "${var.subnet_names[count.index]}-NSG"
+  location            = azurerm_resource_group.lz-network-rg.location
+  resource_group_name = azurerm_resource_group.lz-network-rg.name
+  provider            = azurerm.lz
+}
 
-# # Network security group association with subnet
-# resource "azurerm_subnet_network_security_group_association" "lz-vnet-nsg-association" {
-#   count                     = length(var.subnet_names)
-#   subnet_id                 = azurerm_subnet.lz-subnet[count.index].id
-#   network_security_group_id = azurerm_network_security_group.lz-default-nsg[count.index].id
-#   provider                  = azurerm.lz
-# }
+# Network security group association with subnet
+resource "azurerm_subnet_network_security_group_association" "lz-vnet-nsg-association" {
+  count                     = length(var.subnet_names)
+  subnet_id                 = azurerm_subnet.lz-subnet[count.index].id
+  network_security_group_id = azurerm_network_security_group.lz-default-nsg[count.index].id
+  provider                  = azurerm.lz
+}
 
 /* Below resources will be created as part of the peering connection to the Hub network :
   i) User defnied RT creation to the Hub virtual network
